@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app/core/theme/app_colors.dart';
+import 'package:todo_app/viewModels/theme_view_model.dart';
 import 'package:todo_app/widgets/add_task_bottom_sheet.dart';
 import 'package:todo_app/widgets/task_card.dart';
 import 'package:todo_app/widgets/confirm_dialog.dart';
@@ -11,13 +12,8 @@ import '../widgets/custom_segmented_button.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
-    super.key,
-    required this.themeMode,
-    required this.onThemeChanged,
+    super.key
   });
-
-  final ThemeMode themeMode;
-  final ValueChanged<ThemeMode> onThemeChanged;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -51,10 +47,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _toggleTheme(bool isLight) {
-    widget.onThemeChanged(isLight ? ThemeMode.dark : ThemeMode.light);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -78,8 +70,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
 
-    final vmRead = context.read<HomeViewModel>();
-    final isLight = widget.themeMode == ThemeMode.light;
+    final homeVM = context.read<HomeViewModel>();
+    final themeVM = context.watch<ThemeViewModel>();
+    final isLight = themeVM.theme == ThemeMode.light;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -97,7 +90,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(12, 7, 12, 12),
             child: IconButton(
               onPressed: () {
-                _toggleTheme(isLight);
+                themeVM.toggleTheme();
               },
               icon: isLight
                   ? Icon(Icons.dark_mode_outlined, color: DarkColors.secondary)
@@ -147,7 +140,7 @@ class _HomePageState extends State<HomePage> {
               child: CustomSegmentedButton(
                 segments: ['All', 'Todo', 'Completed'],
                 onChanged: (value) {
-                  vmRead.changeFilter(switch (value) {
+                  homeVM.changeFilter(switch (value) {
                     'All' => StatusFilter.all,
                     'Todo' => StatusFilter.todo,
                     'Completed' => StatusFilter.completed,
@@ -196,7 +189,7 @@ class _HomePageState extends State<HomePage> {
                                     return ConfirmDialog(
                                       isLight: isLight,
                                       onConfirm: () async {
-                                        await vmRead.removeTask(task.id);
+                                        await homeVM.removeTask(task.id);
                                       },
                                     );
                                   },
@@ -214,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.only(bottom: 3),
                                 child: InkWell(
                                   onTap: () async {
-                                    await vmRead.changeStatus(task);
+                                    await homeVM.changeStatus(task);
                                   },
                                   onLongPress: () async {
                                     final result = await showModalBottomSheet(
@@ -232,7 +225,7 @@ class _HomePageState extends State<HomePage> {
                                       },
                                     );
                                     if (result != null) {
-                                      await vmRead.updateTask(result);
+                                      await homeVM.updateTask(result);
                                     }
                                   },
                                   child: TaskCard(task: task, isLight: isLight),
@@ -260,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           );
                           if (result != null) {
-                            await vmRead.addTask(result);
+                            await homeVM.addTask(result);
                           }
                         },
                         backgroundColor: isLight
