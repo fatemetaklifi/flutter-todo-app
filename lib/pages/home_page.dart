@@ -5,15 +5,15 @@ import 'package:provider/provider.dart';
 import 'package:todo_app/core/theme/app_colors.dart';
 import 'package:todo_app/viewModels/theme_view_model.dart';
 import 'package:todo_app/widgets/add_task_bottom_sheet.dart';
+import 'package:todo_app/widgets/home_state/empty_state.dart';
+import 'package:todo_app/widgets/home_state/error_state.dart';
 import 'package:todo_app/widgets/task_card.dart';
 import 'package:todo_app/widgets/confirm_dialog.dart';
 import '../viewModels/home_view_model.dart';
 import '../widgets/custom_segmented_button.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({
-    super.key
-  });
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -69,7 +69,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final homeVM = context.read<HomeViewModel>();
     final themeVM = context.watch<ThemeViewModel>();
     final isLight = themeVM.theme == ThemeMode.light;
@@ -162,17 +161,25 @@ class _HomePageState extends State<HomePage> {
                       builder: (context, vm, child) {
                         final tasks = vm.filteredTasks;
 
-                        if (tasks.isEmpty) {
+                        if (vm.state == HomeState.loading) {
                           return Center(
-                            child: Text(
-                              "No tasks yet \nTap  +  to create your first task",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.grey.shade400,
-                              ),
+                            child: CircularProgressIndicator(
+                              color: isLight
+                                  ? LightColors.secondary
+                                  : DarkColors.accent,
                             ),
                           );
+                        }
+
+                        if (vm.state == HomeState.error) {
+                          return ErrorState(
+                            isLight: isLight,
+                            onRetry: vm.loadTasks,
+                          );
+                        }
+
+                        if (tasks.isEmpty) {
+                          return EmptyState();
                         }
 
                         return ListView.builder(

@@ -5,6 +5,8 @@ import 'dart:collection';
 
 enum StatusFilter { all, todo, completed }
 
+enum HomeState { loading, loaded, error }
+
 class HomeViewModel extends ChangeNotifier {
   HomeViewModel(this._repository);
 
@@ -12,12 +14,17 @@ class HomeViewModel extends ChangeNotifier {
     await loadTasks();
   }
 
+  HomeState _state = HomeState.loading;
   final TaskRepository _repository;
   final List<Task> _tasks = [];
   StatusFilter _selectedStatus = StatusFilter.all;
 
+  HomeState get state => _state;
+
   UnmodifiableListView<Task> get tasks => UnmodifiableListView(_tasks);
+
   StatusFilter get selectedStatus => _selectedStatus;
+
   List<Task> get filteredTasks {
     if (_selectedStatus == StatusFilter.all) {
       return List.unmodifiable(_tasks);
@@ -41,10 +48,19 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> loadTasks() async {
-    final data = await _repository.getTasks();
-    _tasks
-      ..clear()
-      ..addAll(data);
+    _state = HomeState.loading;
+    notifyListeners();
+
+    try {
+      final data = await _repository.getTasks();
+      _tasks
+        ..clear()
+        ..addAll(data);
+      _state = HomeState.loaded;
+    } catch (e) {
+      debugPrint(e.toString());
+      _state = HomeState.error;
+    }
     notifyListeners();
   }
 
@@ -77,14 +93,11 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> updateTask(Task task) async {
-
     await _repository.updateTask(task);
 
-    final index = _tasks.indexWhere(
-          (t) => t.id == task.id,
-    );
+    final index = _tasks.indexWhere((t) => t.id == task.id);
 
-    if(index != -1){
+    if (index != -1) {
       _tasks[index] = task;
     }
 

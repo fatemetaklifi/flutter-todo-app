@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
           },
         ),
         ChangeNotifierProvider(
-          create: (_){
+          create: (_) {
             final vm = ThemeViewModel(themeRepository);
             vm.initialize();
             return vm;
