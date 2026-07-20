@@ -10,14 +10,9 @@ import 'package:todo_app/widgets/task_list.dart';
 import '../viewModels/home_view_model.dart';
 import '../widgets/custom_segmented_button.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final homeVM = context.read<HomeViewModel>();

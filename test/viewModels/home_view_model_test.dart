@@ -10,42 +10,43 @@ void main(){
 
   late MockTaskRepository repository;
   late HomeViewModel homeViewModel;
+  late List<Task> fakeTasks;
   
   setUp((){
     repository = MockTaskRepository();
     homeViewModel = HomeViewModel(repository);
-  });
 
-  final fakeTasks = [
-    Task(
-      id: '1',
-      title: 'task1',
-      priority: TaskPriority.high,
-      status: TaskStatus.completed,
-      createdAt: DateTime.now(),
-    ),
-    Task(
-      id: '2',
-      title: 'task2',
-      priority: TaskPriority.medium,
-      status: TaskStatus.todo,
-      createdAt: DateTime.now(),
-    ),
-    Task(
-      id: '3',
-      title: 'task3',
-      priority: TaskPriority.low,
-      status: TaskStatus.completed,
-      createdAt: DateTime.now(),
-    ),
-    Task(
-      id: '4',
-      title: 'task4',
-      priority: TaskPriority.none,
-      status: TaskStatus.todo,
-      createdAt: DateTime.now(),
-    ),
-  ];
+    fakeTasks = [
+      Task(
+        id: '1',
+        title: 'task1',
+        priority: TaskPriority.high,
+        status: TaskStatus.completed,
+        createdAt: DateTime.now(),
+      ),
+      Task(
+        id: '2',
+        title: 'task2',
+        priority: TaskPriority.medium,
+        status: TaskStatus.todo,
+        createdAt: DateTime.now(),
+      ),
+      Task(
+        id: '3',
+        title: 'task3',
+        priority: TaskPriority.low,
+        status: TaskStatus.completed,
+        createdAt: DateTime.now(),
+      ),
+      Task(
+        id: '4',
+        title: 'task4',
+        priority: TaskPriority.none,
+        status: TaskStatus.todo,
+        createdAt: DateTime.now(),
+      ),
+    ];
+  });
 
   test('loadTasks loads tasks successfully', () async{
 

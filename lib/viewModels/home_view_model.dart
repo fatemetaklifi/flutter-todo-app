@@ -77,11 +77,10 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> changeStatus(Task task) async {
-    final updatedTask = task.copyWith(
-      status: (task.status == TaskStatus.todo)
-          ? TaskStatus.completed
-          : TaskStatus.todo,
-    );
+    final newStatus = (task.status == TaskStatus.todo)
+        ? TaskStatus.completed
+        : TaskStatus.todo;
+    final updatedTask = task.copyWith(status: newStatus);
     await _repository.updateTask(updatedTask);
     final index = _tasks.indexWhere((item) => item.id == task.id);
 
